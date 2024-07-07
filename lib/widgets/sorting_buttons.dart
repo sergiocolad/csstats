@@ -14,13 +14,6 @@ class SortingButtons extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            const Text(
-              'Order by:',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
             const SizedBox(width: 2),
             ElevatedButton(
               onPressed: () => updateSorting('kd'),

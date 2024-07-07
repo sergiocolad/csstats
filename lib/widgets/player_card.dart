@@ -17,23 +17,30 @@ class PlayerCard extends StatelessWidget {
     if (index == 1) {
       cardDecoration = const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/images/golden_background.png'),
-          fit: BoxFit.cover,
-        ),
+            image: AssetImage('assets/images/golden_background.png'),
+            fit: BoxFit.cover,
+            opacity: 0.87),
       );
     } else if (index == 2) {
       cardDecoration = const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/images/silver_background.png'),
-          fit: BoxFit.cover,
-        ),
+            image: AssetImage('assets/images/silver_background.png'),
+            fit: BoxFit.cover,
+            opacity: 0.85),
       );
     } else if (index == 3) {
       cardDecoration = const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/images/bronze_background.png'),
-          fit: BoxFit.cover,
-        ),
+            image: AssetImage('assets/images/bronze_background.png'),
+            fit: BoxFit.cover,
+            opacity: 0.88),
+      );
+    } else if (index == 8) {
+      cardDecoration = const BoxDecoration(
+        image: DecorationImage(
+            image: AssetImage('assets/images/harmless_background.png'),
+            fit: BoxFit.cover,
+            opacity: 0.88),
       );
     } else {
       cardDecoration = const BoxDecoration(

@@ -26,7 +26,7 @@ class ScrapingService {
       }
 
       // Adicionar um pequeno atraso antes de tentar novamente
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(milliseconds: 500));
       if (kDebugMode) {
         print('Retrying... (${attempt + 1}/$retries)');
       }
