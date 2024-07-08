@@ -59,6 +59,7 @@ flutter:
   - assets/images/golden_background.png
   - assets/images/silver_background.png
   - assets/images/bronze_background.png
+  - assets/images/pearl_background.png
   - assets/images/harmless_background.png
 
   # To add assets to your application, add an assets section, like this:
