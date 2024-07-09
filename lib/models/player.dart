@@ -1,4 +1,5 @@
 class Player {
+  final int id;
   final String name;
   final String kd;
   final String hltvRating;
@@ -7,6 +8,7 @@ class Player {
   final String rank;
 
   Player({
+    required this.id,
     required this.name,
     required this.kd,
     required this.hltvRating,
@@ -14,4 +16,17 @@ class Player {
     required this.adr,
     required this.rank,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'rank': rank,
+      'kd': kd,
+      'hltvRating': hltvRating,
+      'adr': adr,
+      'avatarUrl': avatarUrl
+      // Adicione outros campos conforme necessário
+    };
+  }
 }

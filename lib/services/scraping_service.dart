@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:http/http.dart' as http;
 import '../models/player.dart';
 import 'package:flutter/foundation.dart';
 
 class ScrapingService {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   Future<Player> fetchPlayerInfo(int id, int searchPeriod, {int retries = 5}) async {
     String url = '';
 
@@ -21,7 +24,7 @@ class ScrapingService {
           if (kDebugMode) {
             print('Success for player $id.');
           }
-          return compute(parsePlayer, response.body);
+          return compute(parsePlayerWithId, {'responseBody': response.body, 'id': id} );
         } else {
           if (kDebugMode) {
             print('Failed to load webpage for player $id, status code: ${response.statusCode}');
@@ -57,11 +60,19 @@ class ScrapingService {
       }
     }
 
+    for (var player in players) {
+      await _firestore.collection('players').doc(player.id.toString()).set(player.toMap());
+    }
+
     return players;
   }
 }
 
-Player parsePlayer(String responseBody) {
+Player parsePlayerWithId(Map<String, dynamic> data) {
+  return parsePlayer(data['responseBody'], data['id']);
+}
+
+Player parsePlayer(String responseBody, int playerId) {
   var document = parser.parse(responseBody);
   var playerNameElement = document.getElementById('player-name');
   var kdElement = document.getElementById('kpd')?.querySelector('span');
@@ -106,6 +117,7 @@ Player parsePlayer(String responseBody) {
   String avatarUrl = avatarElement != null ? avatarElement.attributes['src'] ?? 'No avatar found' : 'No avatar found';
 
   return Player(
+    id: playerId,
     name: playerName,
     kd: kdElement != null ? kdElement.text.trim() : 'Unable to load Player K/D',
     hltvRating: hltvRatingElement != null ? hltvRatingElement.text.trim() : 'Unable to load Player HLTV Rating',
