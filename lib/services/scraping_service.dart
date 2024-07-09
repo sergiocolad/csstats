@@ -4,10 +4,18 @@ import '../models/player.dart';
 import 'package:flutter/foundation.dart';
 
 class ScrapingService {
-  Future<Player> fetchPlayerInfo(int id, {int retries = 5}) async {
+  Future<Player> fetchPlayerInfo(int id, int searchPeriod, {int retries = 5}) async {
+    String url = '';
+
+    if (searchPeriod == 0) {
+      url = 'https://csstats.gg/player/$id';
+    } else {
+      url = 'https://csstats.gg/player/$id?date=$searchPeriod''d';
+    }
+
     for (int attempt = 0; attempt < retries; attempt++) {
       try {
-        final response = await http.get(Uri.parse('https://csstats.gg/player/$id'));
+        final response = await http.get(Uri.parse(url));
 
         if (response.statusCode == 200) {
           if (kDebugMode) {
@@ -26,7 +34,7 @@ class ScrapingService {
       }
 
       // Adicionar um pequeno atraso antes de tentar novamente
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(seconds: 1));
       if (kDebugMode) {
         print('Retrying... (${attempt + 1}/$retries)');
       }
@@ -35,12 +43,12 @@ class ScrapingService {
     throw Exception('Failed to load webpage for player $id after $retries attempts');
   }
 
-  Future<List<Player>> fetchPlayersInfos(List<int> ids) async {
+  Future<List<Player>> fetchPlayersInfos(List<int> ids, int searchPeriod) async {
     List<Player> players = [];
 
     for (var id in ids) {
       try {
-        Player player = await fetchPlayerInfo(id);
+        Player player = await fetchPlayerInfo(id, searchPeriod);
         players.add(player);
       } catch (e) {
         if (kDebugMode) {

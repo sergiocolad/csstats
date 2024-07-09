@@ -1,3 +1,4 @@
+import 'package:csstats/widgets/search_period.dart';
 import 'package:flutter/material.dart';
 import '../models/player.dart';
 import '../services/scraping_service.dart';
@@ -13,10 +14,6 @@ const List<int> playerIds = [
   76561197989156009,
   76561198117018657,
   76561199065352535,
-  76561199579891812,
-  76561198828036810,
-  76561198445229166,
-  76561198979874950
 ];
 
 class PlayersScreen extends StatefulWidget {
@@ -30,16 +27,18 @@ class PlayersScreenState extends State<PlayersScreen> {
   late Future<List<Player>> futurePlayers;
   List<Player> players = [];
   String sortBy = 'kd';
+  int searchPeriod = 0;
 
   @override
   void initState() {
     super.initState();
-    futurePlayers = fetchPlayers();
+    futurePlayers = fetchPlayers(searchPeriod);
   }
 
-  Future<List<Player>> fetchPlayers() async {
+  Future<List<Player>> fetchPlayers(int searchPeriod) async {
     ScrapingService scrapingService = ScrapingService();
-    List<Player> fetchedPlayers = await scrapingService.fetchPlayersInfos(playerIds);
+    List<Player> fetchedPlayers =
+        await scrapingService.fetchPlayersInfos(playerIds, searchPeriod);
     setState(() {
       players = fetchedPlayers;
       sortPlayers();
@@ -50,13 +49,16 @@ class PlayersScreenState extends State<PlayersScreen> {
   void sortPlayers() {
     if (sortBy == 'kd') {
       players.sort((a, b) {
-        int compare = double.parse(b.kd.replaceAll(',', '')).compareTo(double.parse(a.kd.replaceAll(',', '')));
+        int compare = double.parse(b.kd.replaceAll(',', ''))
+            .compareTo(double.parse(a.kd.replaceAll(',', '')));
         if (compare == 0) {
-          compare = double.parse(b.hltvRating.replaceAll(',', '')).compareTo(double.parse(a.hltvRating.replaceAll(',', '')));
+          compare = double.parse(b.hltvRating.replaceAll(',', ''))
+              .compareTo(double.parse(a.hltvRating.replaceAll(',', '')));
           if (compare == 0) {
             compare = b.adr.compareTo(a.adr);
             if (compare == 0) {
-              compare = int.parse(b.rank.replaceAll(',', '')).compareTo(int.parse(a.rank.replaceAll(',', '')));
+              compare = int.parse(b.rank.replaceAll(',', ''))
+                  .compareTo(int.parse(a.rank.replaceAll(',', '')));
             }
           }
         }
@@ -66,11 +68,14 @@ class PlayersScreenState extends State<PlayersScreen> {
       players.sort((a, b) {
         int compare = b.adr.compareTo(a.adr);
         if (compare == 0) {
-          compare = double.parse(b.kd.replaceAll(',', '')).compareTo(double.parse(a.kd.replaceAll(',', '')));
+          compare = double.parse(b.kd.replaceAll(',', ''))
+              .compareTo(double.parse(a.kd.replaceAll(',', '')));
           if (compare == 0) {
-            compare = double.parse(b.hltvRating.replaceAll(',', '')).compareTo(double.parse(a.hltvRating.replaceAll(',', '')));
+            compare = double.parse(b.hltvRating.replaceAll(',', ''))
+                .compareTo(double.parse(a.hltvRating.replaceAll(',', '')));
             if (compare == 0) {
-              compare = int.parse(b.rank.replaceAll(',', '')).compareTo(int.parse(a.rank.replaceAll(',', '')));
+              compare = int.parse(b.rank.replaceAll(',', ''))
+                  .compareTo(int.parse(a.rank.replaceAll(',', '')));
             }
           }
         }
@@ -78,20 +83,24 @@ class PlayersScreenState extends State<PlayersScreen> {
       });
     } else if (sortBy == 'rating') {
       players.sort((a, b) {
-        int compare = double.parse(b.hltvRating.replaceAll(',', '')).compareTo(double.parse(a.hltvRating.replaceAll(',', '')));
+        int compare = double.parse(b.hltvRating.replaceAll(',', ''))
+            .compareTo(double.parse(a.hltvRating.replaceAll(',', '')));
         if (compare == 0) {
-          compare = double.parse(b.kd.replaceAll(',', '')).compareTo(double.parse(a.kd.replaceAll(',', '')));
+          compare = double.parse(b.kd.replaceAll(',', ''))
+              .compareTo(double.parse(a.kd.replaceAll(',', '')));
           if (compare == 0) {
             compare = b.adr.compareTo(a.adr);
             if (compare == 0) {
-              compare = int.parse(b.rank.replaceAll(',', '')).compareTo(int.parse(a.rank.replaceAll(',', '')));
+              compare = int.parse(b.rank.replaceAll(',', ''))
+                  .compareTo(int.parse(a.rank.replaceAll(',', '')));
             }
           }
         }
         return compare;
       });
     } else if (sortBy == 'rank') {
-      players.sort((a, b) => int.parse(b.rank.replaceAll(',', '')).compareTo(int.parse(a.rank.replaceAll(',', ''))));
+      players.sort((a, b) => int.parse(b.rank.replaceAll(',', ''))
+          .compareTo(int.parse(a.rank.replaceAll(',', ''))));
     }
   }
 
@@ -99,6 +108,13 @@ class PlayersScreenState extends State<PlayersScreen> {
     setState(() {
       sortBy = criterion;
       sortPlayers();
+    });
+  }
+
+  void updateSearchPeriod(int period) {
+    setState(() {
+      searchPeriod = period;
+      futurePlayers = fetchPlayers(searchPeriod);
     });
   }
 
@@ -111,6 +127,10 @@ class PlayersScreenState extends State<PlayersScreen> {
       ),
       body: Column(
         children: [
+          SearchPeriod(
+            searchPeriod: searchPeriod,
+            fetchPlayers: updateSearchPeriod,
+          ),
           SortingButtons(
             sortBy: sortBy,
             updateSorting: updateSorting,
